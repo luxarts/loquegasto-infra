@@ -1,5 +1,15 @@
 # loquegasto-infra
 
+# Requirements
+1. Docker Engine
+2. Repositories downloaded with the following folder structure:
+    ```
+    .
+    |___loquegasto-infra
+    |___loquegasto-backend
+    |___loquegasto-telegram
+    ```
+
 # Run
 ```
 docker compose up --build -d
