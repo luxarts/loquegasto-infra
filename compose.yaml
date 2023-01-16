@@ -1,0 +1,49 @@
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+  postgres:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ../loquegasto-backend/migrations/core.sql:/docker-entrypoint-initdb.d/1-core.sql
+      - ../loquegasto-backend/migrations/core.categories.sql:/docker-entrypoint-initdb.d/2-core.categories.sql
+      - ../loquegasto-backend/migrations/core.transactions.sql:/docker-entrypoint-initdb.d/3-core.transactions.sql
+      - ../loquegasto-backend/migrations/core.users.sql:/docker-entrypoint-initdb.d/4-core.users.sql
+      - ../loquegasto-backend/migrations/core.wallets.sql:/docker-entrypoint-initdb.d/5-core.wallets.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  lqg-backend:
+    build: ../loquegasto-backend
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+  lqg-telegram:
+    build: ../loquegasto-telegram
+    links:
+      - "redis"
+      - "lqg-backend"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - BACKEND_URL=http://lqg-backend:8080
+      - EXPORTER_FILE_PATH=lqg-export
+      - REDIS_HOST=redis:6379
+      - PORT=8080
+    depends_on:
+      - redis
+      - lqg-backend
