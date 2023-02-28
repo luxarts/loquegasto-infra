@@ -58,3 +58,25 @@ docker logs -f <container_id>
    ```
    sudo systemctl status loquegasto.service
    ```
+   
+# Metrics
+1. Download Grafana image
+   ```
+   docker pull grafana/grafana-oss
+   ```
+2. Create volume for persistance
+   ```
+   docker volume create grafana-storage
+   ```
+3. Run Grafana image
+   ```
+   docker run -d -p 3000:3000 --name=grafana -v grafana-storage:/var/lib/grafana grafana/grafana-oss
+   ```
+4. Download Prometheus image
+   ```
+   docker pull prom/prometheus
+   ```
+5. Run Prometheus with the config file
+   ```
+   docker run -d -p 9090:9090 -v prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+   ```
