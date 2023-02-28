@@ -15,6 +15,7 @@ services:
       - ../loquegasto-backend/migrations/core.transactions.sql:/docker-entrypoint-initdb.d/3-core.transactions.sql
       - ../loquegasto-backend/migrations/core.users.sql:/docker-entrypoint-initdb.d/4-core.users.sql
       - ../loquegasto-backend/migrations/core.wallets.sql:/docker-entrypoint-initdb.d/5-core.wallets.sql
+      - lqg-postgres-vol:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -47,3 +48,5 @@ services:
     depends_on:
       - redis
       - lqg-backend
+volumes:
+  lqg-postgres-vol:
