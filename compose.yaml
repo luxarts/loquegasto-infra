@@ -8,6 +8,7 @@ services:
     ports:
       - "5432:5432"
     environment:
+      - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ../loquegasto-backend/migrations/core.sql:/docker-entrypoint-initdb.d/1-core.sql
@@ -17,13 +18,13 @@ services:
       - ../loquegasto-backend/migrations/core.wallets.sql:/docker-entrypoint-initdb.d/5-core.wallets.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 5
   lqg-backend:
     build: ../loquegasto-backend
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
